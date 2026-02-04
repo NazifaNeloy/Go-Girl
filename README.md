@@ -1,25 +1,49 @@
-# Go Girl ✨💅
+# Go Girl ✨💅 — Solo Leveling Edition
 
-A tech-girly dashboard for productivity and growth.
+> **Arise, Girlie!** Level up your productivity with a high-end, gamified dashboard inspired by the Solo Leveling / Shadow Monarch aesthetic.
 
 ## 🚀 Live Demo
-Check out the live site here: [https://NazifaNeloy.github.io/Go-Girl/](https://NazifaNeloy.github.io/Go-Girl/)
+[**Launch System Interface**](https://NazifaNeloy.github.io/Go-Girl/)
 
-## Features
-- **Solo Leveling Aesthetic**: High-end dark theme with neon accents.
-- **Identity Header**: Personalized profile with "Shadow Monarch" titles.
-- **Progress Section**: Gamified tracking with circular progress and streaks.
-- **Glow Heatmap**: Interactive activity board with neon glow.
-- **System Messages**: Rotating motivational quotes with smooth animations.
-- **Glassmorphism**: Premium, modern UI design.
+---
 
-## Development
-To start the development server:
+## 🌌 System Features
+
+### 👑 Shadow Monarch Identity
+*   **Dynamic Identity Header**: Personalized profile with custom titles like "Shadow Monarch (Dev)".
+*   **Pulsing Avatar Aura**: Visual feedback on your active status.
+*   **Neon Glassmorphism**: Premium dark theme with translucent surfaces and glowing borders.
+
+### 📊 Hunter Stats Distribution
+*   **Circular Progress Rings**: Real-time tracking of Hard Skills, Soft Skills, and Challenges.
+*   **XP System**: Integrated Glow Points tracking your daily grind.
+*   **Active Streaks**: Glowing heat-levels reflecting your consistency.
+
+### 🗺️ System Logs & Heatmap
+*   **Neural Activity Heatmap**: Interactive year-long tracking with neon glow intensity.
+*   **Daily Log Extraction**: Modal popups revealing detailed activity, moods, and code snippets.
+*   **System Messages**: Rotating motivational quotes to keep you focused on the goal.
+
+---
+
+## 🛠️ Neural Tech Stack
+
+*   **Core**: React 19 + TypeScript
+*   **Styling**: Tailwind CSS 4
+*   **Animations**: Framer Motion
+*   **Icons**: Lucide React
+*   **Deployment**: GitHub Pages
+
+---
+
+## ⚡ Development
+
+To initialize the development interface:
 ```bash
 npm run dev
 ```
 
-To deploy new updates:
+To synchronize updates to the production gate:
 ```bash
 npm run deploy
 ```
