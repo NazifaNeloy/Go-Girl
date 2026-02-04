@@ -7,11 +7,13 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export type Profile = {
+export type UserProfile = {
     id: string;
     username: string;
     avatar_url?: string;
     bio?: string;
+    title?: string;
+    location?: string;
     total_glow_points: number;
     github_url?: string;
     linkedin_url?: string;
