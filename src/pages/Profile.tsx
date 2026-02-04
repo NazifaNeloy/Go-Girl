@@ -39,26 +39,24 @@ export const Profile: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#050505] p-4 md:p-8 -m-4 md:-m-8">
-            <div className="max-w-6xl mx-auto space-y-10 pb-20">
-                {/* Identity Section */}
-                <ProfileHeader profile={profile} onUpdateBio={handleUpdateBio} />
+        <div className="max-w-6xl mx-auto space-y-10 pb-20 pt-4">
+            {/* Identity Section */}
+            <ProfileHeader profile={profile} onUpdateBio={handleUpdateBio} />
 
-                {/* Progress Section */}
-                <ProgressSection
-                    glowPoints={profile.total_glow_points}
-                    monthlyTarget={600}
-                    streakDays={12}
-                />
+            {/* Progress Section */}
+            <ProgressSection
+                glowPoints={profile.total_glow_points}
+                monthlyTarget={600}
+                streakDays={12}
+            />
 
-                {/* Heatmap & System Messages Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-1 h-full">
-                        <SystemMessage />
-                    </div>
-                    <div className="lg:col-span-2">
-                        <GlowHeatmap logs={MOCK_LOGS} />
-                    </div>
+            {/* Heatmap & System Messages Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-1 h-full">
+                    <SystemMessage />
+                </div>
+                <div className="lg:col-span-2">
+                    <GlowHeatmap logs={MOCK_LOGS} />
                 </div>
             </div>
         </div>

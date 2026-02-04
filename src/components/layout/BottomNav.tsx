@@ -16,7 +16,7 @@ export const BottomNav: React.FC = () => {
 
     return (
         <div className="fixed bottom-0 left-0 right-0 p-4 pt-2 z-50 md:hidden">
-            <nav className="glass rounded-full px-6 py-3 flex justify-between items-center shadow-lg">
+            <nav className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-full px-6 py-3 flex justify-between items-center shadow-[0_0_30px_rgba(0,0,0,0.5)]">
                 {navItems.map((item) => {
                     const isActive = location.pathname === item.path;
                     return (
@@ -24,18 +24,18 @@ export const BottomNav: React.FC = () => {
                             key={item.path}
                             to={item.path}
                             className={cn(
-                                "flex flex-col items-center justify-center space-y-1 transition-colors relative",
-                                isActive ? "text-pink-600" : "text-text-secondary"
+                                "flex flex-col items-center justify-center space-y-1 transition-all relative",
+                                isActive ? "text-pink-500" : "text-gray-500 hover:text-gray-300"
                             )}
                         >
                             {isActive && (
                                 <motion.div
                                     layoutId="active-nav"
-                                    className="absolute -top-10 w-1 h-1 rounded-full bg-pink-500"
+                                    className="absolute -top-3 w-1 h-1 rounded-full bg-pink-500 shadow-[0_0_8px_#ec4899]"
                                 />
                             )}
-                            <item.icon size={24} strokeWidth={isActive ? 2.5 : 2} />
-                            <span className="text-[10px] font-medium">{item.label}</span>
+                            <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                            <span className="text-[9px] font-black uppercase tracking-tighter">{item.label}</span>
                         </Link>
                     );
                 })}

@@ -15,13 +15,15 @@ export const Header: React.FC = () => {
     const location = useLocation();
 
     return (
-        <header className="sticky top-0 z-40 px-6 py-4 flex items-center justify-between glass border-b-0 border-b-transparent/0 bg-white/30 backdrop-blur-md">
+        <header className="sticky top-0 z-40 px-6 py-4 flex items-center justify-between bg-black/20 backdrop-blur-xl border-b border-white/5">
+            <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-pink-500/50 to-transparent" />
+
             <div className="flex items-center space-x-8">
-                <Link to="/" className="flex items-center space-x-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-pink-400 to-purple-400 flex items-center justify-center text-white">
+                <Link to="/" className="flex items-center space-x-2 group">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(236,72,153,0.3)] group-hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] transition-all">
                         <Sparkles size={16} />
                     </div>
-                    <span className="font-bold text-lg tracking-tight text-text-primary">
+                    <span className="font-black text-lg tracking-tighter text-white uppercase italic">
                         Go Girl
                     </span>
                 </Link>
@@ -36,7 +38,7 @@ export const Header: React.FC = () => {
                                     href={item.path}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-sm font-medium text-text-secondary transition-colors hover:text-pink-600"
+                                    className="text-xs font-bold text-gray-400 uppercase tracking-widest transition-colors hover:text-pink-500"
                                 >
                                     {item.label}
                                 </a>
@@ -47,8 +49,8 @@ export const Header: React.FC = () => {
                                 key={item.path}
                                 to={item.path}
                                 className={cn(
-                                    "text-sm font-medium transition-colors hover:text-pink-600",
-                                    isActive ? "text-pink-600" : "text-text-secondary"
+                                    "text-xs font-bold uppercase tracking-widest transition-colors hover:text-pink-500",
+                                    isActive ? "text-pink-500" : "text-gray-400"
                                 )}
                             >
                                 {item.label}
@@ -58,8 +60,8 @@ export const Header: React.FC = () => {
                 </nav>
             </div>
 
-            <button className="p-2 rounded-full hover:bg-white/40 transition-colors">
-                <Bell size={20} className="text-text-secondary" />
+            <button className="p-2 rounded-full hover:bg-white/5 transition-colors text-gray-400 hover:text-white border border-transparent hover:border-white/10">
+                <Bell size={20} />
             </button>
         </header>
     );
