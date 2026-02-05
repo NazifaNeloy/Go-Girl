@@ -5,7 +5,17 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create a dummy client if URL is missing to avoid crashing the whole app
+export const supabase = supabaseUrl
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : {
+        from: () => ({
+            insert: async () => ({ error: null }),
+            select: async () => ({ data: [], error: null }),
+            update: async () => ({ error: null }),
+            upsert: async () => ({ error: null }),
+        })
+    } as any;
 
 export type UserProfile = {
     id: string;

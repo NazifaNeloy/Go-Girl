@@ -9,6 +9,11 @@
   --color-text-primary: #2D1B2E;
   --color-text-secondary: #6B5B6E;
 
+  --color-deep-bg-start: #0F0F0F;
+  --color-deep-bg-end: #1A1A1A;
+  --color-neon-pink: #FF71CD;
+  --color-vibrant-purple: #9D50BB;
+
   --font-sans: "Inter", sans-serif;
   --backdrop-blur-xs: 2px;
 }
@@ -27,6 +32,16 @@
     border: 1px solid rgba(255, 255, 255, 0.5);
     box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     border-radius: 1rem;
+  }
+
+  .glass-dark {
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .neon-glow-pink {
+    box-shadow: 0 0 15px rgba(255, 113, 205, 0.4);
   }
 }
 
