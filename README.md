@@ -3,7 +3,7 @@
 > **Arise, Girlie!** Level up your productivity with a high-end, gamified dashboard inspired by the Solo Leveling / Shadow Monarch aesthetic.
 
 ## 🚀 Live Demo
-[**Launch System Interface**](https://NazifaNeloy.github.io/Go-Girl/)
+[**GoGirl**](https://NazifaNeloy.github.io/Go-Girl/)
 
 ---
 
