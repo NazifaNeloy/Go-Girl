@@ -95,7 +95,7 @@ export const GrowthHub: React.FC = () => {
                         </div>
                         <div>
                             <p className="text-gray-400 text-xs uppercase tracking-widest font-bold">Welcome back</p>
-                            <h1 className="text-xl font-bold">Adam William</h1>
+                            <h1 className="text-xl font-bold">Nazifa Neloy</h1>
                         </div>
                     </div>
                     <button className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
