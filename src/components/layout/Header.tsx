@@ -8,7 +8,6 @@ const navItems = [
     { label: 'Growth', path: '/growth' },
     { label: 'Budget', path: '/budget' },
     { label: 'Profile', path: '/profile' },
-    { label: 'Code', path: 'https://github.com/NazifaNeloy/Go-Girl', external: true },
 ];
 
 export const Header: React.FC = () => {
