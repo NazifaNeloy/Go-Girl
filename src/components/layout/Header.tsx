@@ -30,19 +30,6 @@ export const Header: React.FC = () => {
                 <nav className="hidden md:flex items-center space-x-6">
                     {navItems.map((item) => {
                         const isActive = location.pathname === item.path;
-                        if (item.external) {
-                            return (
-                                <a
-                                    key={item.path}
-                                    href={item.path}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-xs font-bold text-gray-400 uppercase tracking-widest transition-colors hover:text-pink-500"
-                                >
-                                    {item.label}
-                                </a>
-                            );
-                        }
                         return (
                             <Link
                                 key={item.path}
