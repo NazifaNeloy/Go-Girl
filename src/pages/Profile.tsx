@@ -4,12 +4,13 @@ import { ProgressSection } from '../components/profile/ProgressSection';
 import { GlowHeatmap } from '../components/profile/GlowHeatmap';
 import { SystemMessage } from '../components/profile/SystemMessage';
 import type { UserProfile, DailyLog } from '../lib/supabase';
+import profilePic from '../assets/photos/neel_cartoon.jpg';
 
 // --- MOCK DATA FOR UI DEVELOPMENT ---
 const MOCK_PROFILE: UserProfile = {
     id: '1',
     username: 'Nazifa Neloy',
-    avatar_url: 'https://images.unsplash.com/photo-1614726365723-49cfae965d94?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80',
+    avatar_url: profilePic,
     title: 'Shadow Monarch (Dev)',
     bio: 'Leveling up daily. Focus on React and Systems Architecture.',
     location: 'Seoul, Dungeon Gate 1',

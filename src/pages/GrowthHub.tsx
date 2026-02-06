@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Timer, Send, Play, Folder, Star, ChevronRight, LayoutGrid } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { cn } from '../lib/utils';
+import profilePic from '../assets/photos/neel_cartoon.jpg';
 
 export const GrowthHub: React.FC = () => {
     const [duration, setDuration] = useState(30); // minutes
@@ -88,7 +89,7 @@ export const GrowthHub: React.FC = () => {
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-full border-2 border-[#FF71CD] p-0.5">
                             <img
-                                src="https://images.unsplash.com/photo-1614726365723-49cfae965d94?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80"
+                                src={profilePic}
                                 alt="User"
                                 className="w-full h-full rounded-full object-cover"
                             />
