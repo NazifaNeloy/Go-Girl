@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-    Plus,
     Utensils,
     Home,
     FileText,
@@ -9,10 +8,12 @@ import {
     GraduationCap,
     History,
     ArrowUpRight,
+    ArrowDownLeft,
     Wallet,
     TrendingUp,
     Search,
-    Bell
+    Bell,
+    Check
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { cn } from '../lib/utils';
@@ -22,6 +23,7 @@ interface Transaction {
     item_name: string;
     amount: number;
     category: 'Food' | 'Accommodation' | 'Bills' | 'Self-Care' | 'Learning';
+    type: 'credit' | 'debit';
     created_at: string;
 }
 
@@ -42,6 +44,7 @@ export const Budget: React.FC = () => {
     const [itemName, setItemName] = useState('');
     const [amount, setAmount] = useState('');
     const [category, setCategory] = useState<keyof typeof CATEGORIES>('Food');
+    const [type, setType] = useState<'credit' | 'debit'>('debit');
 
     useEffect(() => {
         fetchTransactions();
@@ -59,13 +62,13 @@ export const Budget: React.FC = () => {
             setTransactions(data || []);
         } catch (error) {
             console.error('Error fetching transactions:', error);
-            // Fallback mock data if table doesn't exist yet
+            // Fallback mock data with credit/debit
             setTransactions([
-                { id: '1', item_name: 'Supermarket', amount: 120, category: 'Food', created_at: new Date().toISOString() },
-                { id: '2', item_name: 'Rent', amount: 800, category: 'Accommodation', created_at: new Date().toISOString() },
-                { id: '3', item_name: 'Electricity', amount: 65, category: 'Bills', created_at: new Date().toISOString() },
-                { id: '4', item_name: 'Face Clean', amount: 45, category: 'Self-Care', created_at: new Date().toISOString() },
-                { id: '5', item_name: 'React Course', amount: 99, category: 'Learning', created_at: new Date().toISOString() },
+                { id: '1', item_name: 'Salary', amount: 5000, category: 'Learning', type: 'credit', created_at: new Date().toISOString() },
+                { id: '2', item_name: 'Supermarket', amount: 120, category: 'Food', type: 'debit', created_at: new Date().toISOString() },
+                { id: '3', item_name: 'Rent', amount: 800, category: 'Accommodation', type: 'debit', created_at: new Date().toISOString() },
+                { id: '4', item_name: 'Freelance Work', amount: 1500, category: 'Learning', type: 'credit', created_at: new Date().toISOString() },
+                { id: '5', item_name: 'Electricity', amount: 65, category: 'Bills', type: 'debit', created_at: new Date().toISOString() },
             ]);
         } finally {
             setIsLoading(false);
@@ -81,6 +84,7 @@ export const Budget: React.FC = () => {
             item_name: itemName,
             amount: parseFloat(amount),
             category,
+            type,
             created_at: new Date().toISOString(),
         };
 
@@ -93,21 +97,22 @@ export const Budget: React.FC = () => {
 
             setItemName('');
             setAmount('');
+            setType('debit');
             fetchTransactions();
         } catch (error) {
             console.error('Error adding transaction:', error);
-            // Even if DB fails, update local state for UI demonstration
             setTransactions([{ id: Math.random().toString(), ...newTransaction }, ...transactions]);
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
+    const totalDebit = transactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
+    const totalCredit = transactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
 
-    const categoryTotals = Object.keys(CATEGORIES).reduce((acc, cat) => {
+    const categoryDebitTotals = Object.keys(CATEGORIES).reduce((acc, cat) => {
         acc[cat as keyof typeof CATEGORIES] = transactions
-            .filter(t => t.category === cat)
+            .filter(t => t.category === cat && t.type === 'debit')
             .reduce((sum, t) => sum + t.amount, 0);
         return acc;
     }, {} as Record<keyof typeof CATEGORIES, number>);
@@ -136,29 +141,36 @@ export const Budget: React.FC = () => {
                 <section className="relative group">
                     <div className="absolute -inset-1 bg-gradient-to-r from-[#FF71CD] to-[#9D50BB] rounded-[2.5rem] blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
                     <div className="relative glass-dark rounded-[2.5rem] p-10 border border-white/10">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                            <div className="space-y-6">
-                                <div>
-                                    <p className="text-sm font-bold uppercase tracking-widest text-[#FF71CD]">Total Spending</p>
-                                    <h2 className="text-6xl font-black italic tracking-tighter mt-2">${totalSpent.toLocaleString()}</h2>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                            <div className="grid grid-cols-2 gap-8">
+                                <div className="space-y-4">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#4ADE80]">Total Income</p>
+                                    <h2 className="text-4xl font-black italic tracking-tighter">${totalCredit.toLocaleString()}</h2>
+                                    <div className="flex items-center gap-1 text-[10px] text-green-400 font-bold bg-green-400/10 px-2 py-0.5 rounded-full w-fit uppercase">
+                                        <TrendingUp size={12} />
+                                        <span>Income</span>
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-2 text-green-400 font-bold bg-green-400/10 px-3 py-1 rounded-full w-fit text-sm">
-                                    <TrendingUp size={16} />
-                                    <span>+12.5% vs last month</span>
+                                <div className="space-y-4">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#FF71CD]">Total Spending</p>
+                                    <h2 className="text-4xl font-black italic tracking-tighter">${totalDebit.toLocaleString()}</h2>
+                                    <div className="flex items-center gap-1 text-[10px] text-pink-400 font-bold bg-pink-400/10 px-2 py-0.5 rounded-full w-fit uppercase">
+                                        <ArrowUpRight size={12} />
+                                        <span>Expenses</span>
+                                    </div>
                                 </div>
                             </div>
 
                             <div className="flex flex-col justify-end space-y-6">
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-end">
-                                        <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Spending Breakdown</p>
-                                        <p className="text-xs font-mono text-white/40">CALCULATED DYNAMICALLY</p>
+                                        <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Spending Breakdown (Debit)</p>
+                                        <p className="text-xs font-mono text-white/40">CALC: {totalDebit > 0 ? 'ACTIVE' : 'IDLE'}</p>
                                     </div>
-                                    {/* Segmented Bar Chart */}
                                     <div className="h-6 w-full bg-white/5 rounded-full overflow-hidden flex border border-white/10 p-1">
                                         {Object.entries(CATEGORIES).map(([cat, config]) => {
-                                            const amount = categoryTotals[cat as keyof typeof CATEGORIES];
-                                            const percentage = totalSpent > 0 ? (amount / totalSpent) * 100 : 0;
+                                            const amount = categoryDebitTotals[cat as keyof typeof CATEGORIES];
+                                            const percentage = totalDebit > 0 ? (amount / totalDebit) * 100 : 0;
                                             if (percentage === 0) return null;
                                             return (
                                                 <motion.div
@@ -177,12 +189,11 @@ export const Budget: React.FC = () => {
                                         })}
                                     </div>
                                 </div>
-
                                 <div className="flex flex-wrap gap-4">
                                     {Object.entries(CATEGORIES).map(([cat, config]) => (
                                         <div key={cat} className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: config.color }} />
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{cat}</span>
+                                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: config.color }} />
+                                            <span className="text-[9px] font-bold uppercase tracking-widest text-gray-500">{cat}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -194,19 +205,38 @@ export const Budget: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                     {/* Log Transaction Form */}
                     <section className="lg:col-span-1 glass-dark rounded-[2.5rem] p-8 border border-white/10 space-y-8">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-xl font-black italic tracking-tighter uppercase">Log Transaction</h3>
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#FF71CD] to-[#9D50BB] flex items-center justify-center shadow-[0_0_15px_rgba(255,113,205,0.3)]">
-                                <Plus size={20} />
-                            </div>
-                        </div>
+                        <h3 className="text-xl font-black italic tracking-tighter uppercase">Log Transaction</h3>
 
                         <form onSubmit={handleAddTransaction} className="space-y-6">
+                            {/* Type Toggle */}
+                            <div className="flex p-1 bg-white/5 rounded-2xl border border-white/5">
+                                <button
+                                    type="button"
+                                    onClick={() => setType('debit')}
+                                    className={cn(
+                                        "flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+                                        type === 'debit' ? "bg-white/10 text-white border border-white/10" : "text-gray-500"
+                                    )}
+                                >
+                                    Debit
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setType('credit')}
+                                    className={cn(
+                                        "flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+                                        type === 'credit' ? "bg-white/10 text-white border border-white/10" : "text-gray-500"
+                                    )}
+                                >
+                                    Credit
+                                </button>
+                            </div>
+
                             <div className="space-y-2">
                                 <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 px-1">Item Name</label>
                                 <input
                                     type="text"
-                                    placeholder="e.g. Netflix Subscription"
+                                    placeholder="e.g. Salary, Rent, Netflix"
                                     value={itemName}
                                     onChange={(e) => setItemName(e.target.value)}
                                     className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[#FF71CD] transition-all"
@@ -243,7 +273,7 @@ export const Budget: React.FC = () => {
                                                 {React.createElement(CATEGORIES[cat as keyof typeof CATEGORIES].icon, { size: 18 })}
                                                 <span className="font-bold">{cat}</span>
                                             </div>
-                                            {category === cat && <div className="w-2 h-2 rounded-full bg-[#FF71CD]" />}
+                                            {category === cat && <Check size={14} className="text-[#FF71CD]" />}
                                         </button>
                                     ))}
                                 </div>
@@ -254,7 +284,7 @@ export const Budget: React.FC = () => {
                                 disabled={isSubmitting || !itemName || !amount}
                                 className="w-full py-4 bg-gradient-to-r from-[#FF71CD] to-[#9D50BB] text-white font-black uppercase tracking-widest rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
                             >
-                                {isSubmitting ? 'Processing...' : 'Secure Entry'}
+                                {isSubmitting ? 'Syncing...' : 'Log Transaction'}
                             </button>
                         </form>
                     </section>
@@ -264,40 +294,38 @@ export const Budget: React.FC = () => {
                         <div className="flex items-center justify-between">
                             <h3 className="text-xl font-black italic tracking-tighter uppercase flex items-center gap-3">
                                 <History size={24} className="text-[#FF71CD]" />
-                                Recent Transactions
+                                Recent History
                             </h3>
-                            <button onClick={fetchTransactions} className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
-                                Reset View
-                            </button>
                         </div>
 
                         <div className="space-y-4">
                             {isLoading ? (
-                                <div className="p-10 text-center text-gray-500 animate-pulse">Scanning database...</div>
+                                <div className="p-10 text-center text-gray-500 animate-pulse uppercase tracking-[0.2em] font-black">Syncing Node...</div>
                             ) : transactions.length === 0 ? (
-                                <div className="p-10 text-center text-gray-400 border border-white/5 border-dashed rounded-[2rem]">No transactions found in this cycle.</div>
+                                <div className="p-10 text-center text-gray-400 border border-white/5 border-dashed rounded-[2rem]">Empty block. Start logging.</div>
                             ) : (
                                 transactions.map((t, i) => {
                                     const CategoryIcon = CATEGORIES[t.category]?.icon || Wallet;
+                                    const isCredit = t.type === 'credit';
                                     return (
                                         <motion.div
-                                            initial={{ opacity: 0, x: -20 }}
-                                            animate={{ opacity: 1, x: 0 }}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
                                             transition={{ delay: i * 0.05 }}
                                             key={t.id}
-                                            className="group glass-dark p-5 rounded-[2rem] border border-white/10 flex items-center justify-between hover:border-[#FF71CD]/30 transition-all bg-gradient-to-r from-transparent to-transparent hover:to-[#FF71CD]/5"
+                                            className="group glass-dark p-5 rounded-[2rem] border border-white/10 flex items-center justify-between hover:border-white/20 transition-all"
                                         >
                                             <div className="flex items-center gap-5">
                                                 <div className={cn(
-                                                    "w-14 h-14 rounded-2xl flex items-center justify-center border border-white/10 shadow-lg group-hover:scale-110 transition-transform",
-                                                    CATEGORIES[t.category]?.gradient || "bg-white/5"
+                                                    "w-14 h-14 rounded-2xl flex items-center justify-center border border-white/10 shadow-lg group-hover:scale-105 transition-transform",
+                                                    isCredit ? "bg-green-500/10" : "bg-red-500/10"
                                                 )}>
-                                                    <CategoryIcon size={24} style={{ color: CATEGORIES[t.category]?.color }} />
+                                                    <CategoryIcon size={24} className={isCredit ? "text-green-400" : "text-red-400"} />
                                                 </div>
                                                 <div>
                                                     <h4 className="font-bold text-base text-white">{t.item_name}</h4>
                                                     <div className="flex items-center gap-2 mt-1">
-                                                        <span className="text-[10px] uppercase font-bold tracking-widest py-0.5 px-2 rounded-md bg-white/5 text-gray-400">
+                                                        <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-md bg-white/5 text-gray-400">
                                                             {t.category}
                                                         </span>
                                                         <span className="text-[10px] text-gray-500">
@@ -307,12 +335,18 @@ export const Budget: React.FC = () => {
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-xl font-black italic tracking-tighter">
-                                                    -${t.amount.toLocaleString()}
+                                                <div className={cn(
+                                                    "text-xl font-black italic tracking-tighter",
+                                                    isCredit ? "text-green-400" : "text-white"
+                                                )}>
+                                                    {isCredit ? '+' : '-'}${t.amount.toLocaleString()}
                                                 </div>
-                                                <div className="flex items-center justify-end gap-1 text-[10px] text-red-400 uppercase font-black tracking-widest group-hover:opacity-100 opacity-60 transition-opacity">
-                                                    <ArrowUpRight size={12} />
-                                                    Debit
+                                                <div className={cn(
+                                                    "flex items-center justify-end gap-1 text-[9px] uppercase font-black tracking-widest",
+                                                    isCredit ? "text-green-400" : "text-red-500"
+                                                )}>
+                                                    {isCredit ? <ArrowDownLeft size={10} /> : <ArrowUpRight size={10} />}
+                                                    {isCredit ? 'Credit' : 'Debit'}
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -320,10 +354,6 @@ export const Budget: React.FC = () => {
                                 })
                             )}
                         </div>
-
-                        <button className="w-full py-4 border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white hover:bg-white/5 transition-all">
-                            Load Archived Data
-                        </button>
                     </section>
                 </div>
             </div>
