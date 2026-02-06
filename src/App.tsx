@@ -3,6 +3,7 @@ import { Layout } from './components/layout/Layout';
 import { Home } from './pages/Home';
 import { Profile } from './pages/Profile';
 import { GrowthHub } from './pages/GrowthHub';
+import { Budget } from './pages/Budget';
 
 function App() {
   return (
@@ -11,7 +12,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/growth" element={<GrowthHub />} />
-          <Route path="/budget" element={<div className="text-center p-10">Budget Page Coming Soon 💸</div>} />
+          <Route path="/budget" element={<Budget />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
       </Layout>
