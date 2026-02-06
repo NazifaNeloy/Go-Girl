@@ -13,7 +13,9 @@ import {
     TrendingUp,
     Search,
     Bell,
-    Check
+    Check,
+    Briefcase,
+    Heart
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { cn } from '../lib/utils';
@@ -22,18 +24,27 @@ interface Transaction {
     id: string;
     item_name: string;
     amount: number;
-    category: 'Food' | 'Accommodation' | 'Bills' | 'Self-Care' | 'Learning';
+    category: string;
     type: 'credit' | 'debit';
     created_at: string;
 }
 
-const CATEGORIES = {
+const DEBIT_CATEGORIES = {
     'Food': { color: '#4ADE80', icon: Utensils, gradient: 'from-green-500/20' },
     'Accommodation': { color: '#60A5FA', icon: Home, gradient: 'from-blue-500/20' },
     'Bills': { color: '#F472B6', icon: FileText, gradient: 'from-pink-500/20' },
     'Self-Care': { color: '#FBBF24', icon: Sparkles, gradient: 'from-yellow-500/20' },
     'Learning': { color: '#A78BFA', icon: GraduationCap, gradient: 'from-purple-500/20' },
 };
+
+const CREDIT_CATEGORIES = {
+    'Work': { color: '#4ADE80', icon: Briefcase, gradient: 'from-green-500/20' },
+    'Tuition': { color: '#60A5FA', icon: GraduationCap, gradient: 'from-blue-500/20' },
+    'Gifts': { color: '#F472B6', icon: Heart, gradient: 'from-pink-500/20' },
+    'Others': { color: '#94A3B8', icon: Wallet, gradient: 'from-slate-500/20' },
+};
+
+const ALL_CATEGORIES = { ...DEBIT_CATEGORIES, ...CREDIT_CATEGORIES };
 
 export const Budget: React.FC = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -43,8 +54,8 @@ export const Budget: React.FC = () => {
     // Form state
     const [itemName, setItemName] = useState('');
     const [amount, setAmount] = useState('');
-    const [category, setCategory] = useState<keyof typeof CATEGORIES>('Food');
     const [type, setType] = useState<'credit' | 'debit'>('debit');
+    const [category, setCategory] = useState<string>('Food');
 
     useEffect(() => {
         fetchTransactions();
@@ -62,13 +73,14 @@ export const Budget: React.FC = () => {
             setTransactions(data || []);
         } catch (error) {
             console.error('Error fetching transactions:', error);
-            // Fallback mock data with credit/debit
+            // Fallback mock data
             setTransactions([
-                { id: '1', item_name: 'Salary', amount: 5000, category: 'Learning', type: 'credit', created_at: new Date().toISOString() },
+                { id: '1', item_name: 'Monthly Salary', amount: 5000, category: 'Work', type: 'credit', created_at: new Date().toISOString() },
                 { id: '2', item_name: 'Supermarket', amount: 120, category: 'Food', type: 'debit', created_at: new Date().toISOString() },
                 { id: '3', item_name: 'Rent', amount: 800, category: 'Accommodation', type: 'debit', created_at: new Date().toISOString() },
-                { id: '4', item_name: 'Freelance Work', amount: 1500, category: 'Learning', type: 'credit', created_at: new Date().toISOString() },
-                { id: '5', item_name: 'Electricity', amount: 65, category: 'Bills', type: 'debit', created_at: new Date().toISOString() },
+                { id: '4', item_name: 'Freelance Work', amount: 1500, category: 'Work', type: 'credit', created_at: new Date().toISOString() },
+                { id: '5', item_name: 'Tuition Income', amount: 200, category: 'Tuition', type: 'credit', created_at: new Date().toISOString() },
+                { id: '6', item_name: 'Mom gave', amount: 50, category: 'Gifts', type: 'credit', created_at: new Date().toISOString() },
             ]);
         } finally {
             setIsLoading(false);
@@ -97,7 +109,6 @@ export const Budget: React.FC = () => {
 
             setItemName('');
             setAmount('');
-            setType('debit');
             fetchTransactions();
         } catch (error) {
             console.error('Error adding transaction:', error);
@@ -110,12 +121,19 @@ export const Budget: React.FC = () => {
     const totalDebit = transactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
     const totalCredit = transactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
 
-    const categoryDebitTotals = Object.keys(CATEGORIES).reduce((acc, cat) => {
-        acc[cat as keyof typeof CATEGORIES] = transactions
+    const categoryDebitTotals = Object.keys(DEBIT_CATEGORIES).reduce((acc, cat) => {
+        acc[cat] = transactions
             .filter(t => t.category === cat && t.type === 'debit')
             .reduce((sum, t) => sum + t.amount, 0);
         return acc;
-    }, {} as Record<keyof typeof CATEGORIES, number>);
+    }, {} as Record<string, number>);
+
+    const activeCategories = type === 'debit' ? DEBIT_CATEGORIES : CREDIT_CATEGORIES;
+
+    // Switch default category when type changes
+    useEffect(() => {
+        setCategory(type === 'debit' ? 'Food' : 'Work');
+    }, [type]);
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] to-[#121212] text-white pb-32">
@@ -168,8 +186,8 @@ export const Budget: React.FC = () => {
                                         <p className="text-xs font-mono text-white/40">CALC: {totalDebit > 0 ? 'ACTIVE' : 'IDLE'}</p>
                                     </div>
                                     <div className="h-6 w-full bg-white/5 rounded-full overflow-hidden flex border border-white/10 p-1">
-                                        {Object.entries(CATEGORIES).map(([cat, config]) => {
-                                            const amount = categoryDebitTotals[cat as keyof typeof CATEGORIES];
+                                        {Object.entries(DEBIT_CATEGORIES).map(([cat, config]) => {
+                                            const amount = categoryDebitTotals[cat];
                                             const percentage = totalDebit > 0 ? (amount / totalDebit) * 100 : 0;
                                             if (percentage === 0) return null;
                                             return (
@@ -190,7 +208,7 @@ export const Budget: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="flex flex-wrap gap-4">
-                                    {Object.entries(CATEGORIES).map(([cat, config]) => (
+                                    {Object.entries(DEBIT_CATEGORIES).map(([cat, config]) => (
                                         <div key={cat} className="flex items-center gap-2">
                                             <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: config.color }} />
                                             <span className="text-[9px] font-bold uppercase tracking-widest text-gray-500">{cat}</span>
@@ -257,11 +275,11 @@ export const Budget: React.FC = () => {
                             <div className="space-y-2">
                                 <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 px-1">Category</label>
                                 <div className="grid grid-cols-1 gap-2">
-                                    {Object.keys(CATEGORIES).map((cat) => (
+                                    {Object.keys(activeCategories).map((cat) => (
                                         <button
                                             key={cat}
                                             type="button"
-                                            onClick={() => setCategory(cat as any)}
+                                            onClick={() => setCategory(cat)}
                                             className={cn(
                                                 "flex items-center justify-between p-4 rounded-2xl border transition-all text-sm",
                                                 category === cat
@@ -270,7 +288,7 @@ export const Budget: React.FC = () => {
                                             )}
                                         >
                                             <div className="flex items-center gap-3">
-                                                {React.createElement(CATEGORIES[cat as keyof typeof CATEGORIES].icon, { size: 18 })}
+                                                {React.createElement((activeCategories as any)[cat].icon, { size: 18 })}
                                                 <span className="font-bold">{cat}</span>
                                             </div>
                                             {category === cat && <Check size={14} className="text-[#FF71CD]" />}
@@ -305,7 +323,8 @@ export const Budget: React.FC = () => {
                                 <div className="p-10 text-center text-gray-400 border border-white/5 border-dashed rounded-[2rem]">Empty block. Start logging.</div>
                             ) : (
                                 transactions.map((t, i) => {
-                                    const CategoryIcon = CATEGORIES[t.category]?.icon || Wallet;
+                                    const categoryConfig = (ALL_CATEGORIES as any)[t.category] || { icon: Wallet, color: '#fff', gradient: 'bg-white/5' };
+                                    const CategoryIcon = categoryConfig.icon;
                                     const isCredit = t.type === 'credit';
                                     return (
                                         <motion.div
