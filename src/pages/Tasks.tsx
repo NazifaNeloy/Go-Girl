@@ -54,8 +54,8 @@ export const Tasks: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen pb-32">
-            <div className="max-w-2xl mx-auto px-6 py-10 space-y-10">
+        <div className="theme-soft min-h-screen pb-32">
+            <div className="max-w-2xl mx-auto px-6 py-10 space-y-10 relative z-10">
                 {/* Header from Image 2 */}
                 <header className="flex justify-between items-center text-[#2D1B2E]">
                     <button className="p-2 rounded-xl bg-white shadow-sm hover:bg-gray-50 transition-colors">
