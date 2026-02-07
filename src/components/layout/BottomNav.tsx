@@ -1,11 +1,11 @@
-import React from 'react';
-import { Home, BookHeart, Wallet, UserCircle2 } from 'lucide-react';
+import { Home, BookHeart, Wallet, UserCircle2, LayoutList } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 import { motion } from 'framer-motion';
 
 const navItems = [
     { icon: Home, label: 'Home', path: '/' },
+    { icon: LayoutList, label: 'Tasks', path: '/tasks' },
     { icon: BookHeart, label: 'Growth', path: '/growth' },
     { icon: Wallet, label: 'Budget', path: '/budget' },
     { icon: UserCircle2, label: 'Profile', path: '/profile' },

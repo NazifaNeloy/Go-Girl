@@ -4,6 +4,7 @@ import { Home } from './pages/Home';
 import { Profile } from './pages/Profile';
 import { GrowthHub } from './pages/GrowthHub';
 import { Budget } from './pages/Budget';
+import { Tasks } from './pages/Tasks';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/growth" element={<GrowthHub />} />
           <Route path="/budget" element={<Budget />} />
+          <Route path="/tasks" element={<Tasks />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
       </Layout>

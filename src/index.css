@@ -14,11 +14,25 @@
   --color-neon-pink: #FF71CD;
   --color-vibrant-purple: #9D50BB;
 
+  --color-soft-peach: #F9DCC4;
+  --color-dusty-rose: #E09F7D;
+  --color-soft-lavender: #C9ADA7;
+  --color-muted-rose: #B47B84;
+  --color-soft-purple: #947EB0;
+  --color-golden-yellow: #D4A343;
+
   --font-sans: "Inter", sans-serif;
   --backdrop-blur-xs: 2px;
 }
 
 @layer utilities {
+  .soft-card {
+    background-color: white;
+    border-radius: 40px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 1);
+  }
+
   .glass {
     background-color: var(--color-glass-white);
     backdrop-filter: blur(12px);
@@ -46,9 +60,37 @@
 }
 
 body {
-  background-color: var(--color-warm-neutral);
+  background-color: #F7E7E5;
   color: var(--color-text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  border-radius: 50%;
+  z-index: -1;
+  filter: blur(60px);
+  opacity: 0.3;
+}
+
+body::before {
+  width: 400px;
+  height: 400px;
+  background-color: var(--color-soft-peach);
+  top: -100px;
+  left: -100px;
+}
+
+body::after {
+  width: 300px;
+  height: 300px;
+  background-color: var(--color-dusty-rose);
+  bottom: 10%;
+  right: -50px;
 }

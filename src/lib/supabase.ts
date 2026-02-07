@@ -38,3 +38,17 @@ export type DailyLog = {
     learning_log?: string;
     code_snippet?: string;
 };
+
+export type Task = {
+    id: string;
+    user_id: string;
+    title: string;
+    start_time: string; // ISO time string or simple "HH:mm"
+    end_time: string;   // ISO time string or simple "HH:mm"
+    date: string;       // ISO date string YYYY-MM-DD
+    category: string;
+    is_reminder_on: boolean;
+    is_completed: boolean;
+    sub_tasks?: string[];
+    created_at?: string;
+};
