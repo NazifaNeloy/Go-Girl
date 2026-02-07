@@ -8,29 +8,48 @@ import { motion } from 'framer-motion';
 import type { Task } from '../lib/supabase';
 
 export const Tasks: React.FC = () => {
-    const [tasks, setTasks] = useState<Task[]>([]);
+    const [tasks, setTasks] = useState<Task[]>([
+        {
+            id: '1',
+            user_id: 'mock',
+            title: 'Welcome to Daily Tasks! ✨',
+            start_time: '09:00',
+            end_time: '10:00',
+            date: format(new Date(), 'yyyy-MM-dd'),
+            category: 'Personal',
+            is_reminder_on: true,
+            is_completed: false,
+            sub_tasks: ['Explore the new UI', 'Create your first task']
+        }
+    ]);
     const [isCreatorOpen, setIsCreatorOpen] = useState(false);
     const [selectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
 
     useEffect(() => {
         fetchTasks();
         // Subscribe to real-time changes
-        const subscription = taskService.subscribeToTasks('user-id-placeholder', (payload) => {
-            console.log('Real-time change:', payload);
-            fetchTasks();
-        });
+        try {
+            const subscription = taskService.subscribeToTasks('user-id-placeholder', (payload) => {
+                console.log('Real-time change:', payload);
+                fetchTasks();
+            });
 
-        return () => {
-            subscription.unsubscribe();
-        };
+            return () => {
+                subscription.unsubscribe();
+            };
+        } catch (e) {
+            console.warn('Real-time subscription failed:', e);
+        }
     }, [selectedDate]);
 
     const fetchTasks = async () => {
         try {
             const data = await taskService.getTasks(selectedDate);
-            setTasks(data);
+            if (data && data.length > 0) {
+                setTasks(data);
+            }
         } catch (error) {
-            console.error('Error fetching tasks:', error);
+            console.error('Error fetching tasks, using mock data:', error);
         }
     };
 

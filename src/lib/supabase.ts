@@ -5,17 +5,31 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-// Create a dummy client if URL is missing to avoid crashing the whole app
-export const supabase = supabaseUrl
-    ? createClient(supabaseUrl, supabaseAnonKey)
-    : {
-        from: () => ({
-            insert: async () => ({ error: null }),
-            select: async () => ({ data: [], error: null }),
-            update: async () => ({ error: null }),
-            upsert: async () => ({ error: null }),
+// Create a dummy client that supports chaining to avoid crashing the whole app
+const mockClient = {
+    from: () => ({
+        select: () => mockClient.from(),
+        insert: () => mockClient.from(),
+        update: () => mockClient.from(),
+        delete: () => mockClient.from(),
+        upsert: () => mockClient.from(),
+        eq: () => mockClient.from(),
+        order: () => mockClient.from(),
+        single: () => mockClient.from(),
+        match: () => mockClient.from(),
+        // Make it thenable so 'await' works
+        then: (onFullfilled: any) => onFullfilled({ data: [], error: null })
+    }),
+    channel: () => ({
+        on: () => ({
+            subscribe: () => ({ unsubscribe: () => { } })
         })
-    } as any;
+    })
+} as any;
+
+export const supabase = supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : mockClient;
 
 export type UserProfile = {
     id: string;
