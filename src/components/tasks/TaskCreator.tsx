@@ -67,36 +67,36 @@ export const TaskCreator: React.FC<TaskCreatorProps> = ({ isOpen, onClose, onSub
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-                        className="fixed bottom-0 left-0 right-0 bg-[#B47B84] rounded-t-[50px] z-[70] shadow-2xl max-h-[95vh] overflow-y-auto"
+                        className="fixed bottom-0 left-0 right-0 bg-[#0A0A0A] border-t border-white/10 rounded-t-[50px] z-[70] shadow-2xl max-h-[95vh] overflow-y-auto"
                     >
                         {/* Header */}
-                        <div className="p-8 flex items-center justify-between text-white">
-                            <button onClick={onClose} className="flex items-center space-x-2 text-sm font-bold opacity-80">
+                        <div className="p-8 flex items-center justify-between text-white border-b border-white/5">
+                            <button onClick={onClose} className="flex items-center space-x-2 text-sm font-bold opacity-80 hover:text-pink-500 transition-colors">
                                 <X size={18} />
-                                <span>Back</span>
+                                <span>Cancel</span>
                             </button>
-                            <h2 className="text-xl font-black">Create New Task</h2>
+                            <h2 className="text-xl font-black italic uppercase tracking-tighter">New Task</h2>
                             <div className="w-10" /> {/* Spacer */}
                         </div>
 
                         {/* Form Content */}
-                        <div className="bg-[#F7E7E5] rounded-t-[50px] p-8 space-y-8 min-h-[500px]">
+                        <div className="p-8 space-y-8 min-h-[500px] bg-zinc-950/50">
                             <form onSubmit={handleSubmit} className="space-y-8 pb-10">
 
                                 {/* Date Selection (Grid Calendar) */}
                                 <div className="space-y-4">
-                                    <label className="text-xs font-black text-[#B47B84] uppercase tracking-widest pl-2">Date</label>
-                                    <div className="bg-white rounded-[30px] p-6 shadow-sm">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <h3 className="font-bold text-[#2D1B2E]">{format(currentMonth, 'MMMM yyyy')}</h3>
+                                    <label className="text-xs font-black text-pink-500 uppercase tracking-widest pl-2">Selection Date</label>
+                                    <div className="bg-zinc-900 border border-white/10 rounded-[30px] p-6 shadow-xl">
+                                        <div className="flex justify-between items-center mb-4 text-white">
+                                            <h3 className="font-bold">{format(currentMonth, 'MMMM yyyy')}</h3>
                                             <div className="flex space-x-2">
-                                                <button type="button" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-1"><ChevronLeft size={20} /></button>
-                                                <button type="button" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-1"><ChevronRight size={20} /></button>
+                                                <button type="button" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-1 hover:text-pink-500"><ChevronLeft size={20} /></button>
+                                                <button type="button" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-1 hover:text-pink-500"><ChevronRight size={20} /></button>
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-7 gap-2">
-                                            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                                                <div key={day} className="text-center text-[10px] font-black text-gray-400 uppercase">{day}</div>
+                                            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
+                                                <div key={day} className="text-center text-[10px] font-black text-gray-500 uppercase">{day}</div>
                                             ))}
                                             {daysInMonth.map((day, i) => (
                                                 <button
@@ -105,9 +105,9 @@ export const TaskCreator: React.FC<TaskCreatorProps> = ({ isOpen, onClose, onSub
                                                     onClick={() => setSelectedDate(day)}
                                                     className={cn(
                                                         "h-10 w-10 flex items-center justify-center rounded-xl text-sm font-bold transition-all",
-                                                        !isSameMonth(day, currentMonth) && "text-gray-300",
-                                                        isSameDay(day, selectedDate) ? "bg-[#B47B84] text-white shadow-md scale-110" : "text-[#2D1B2E] hover:bg-pink-50",
-                                                        isSameDay(day, new Date()) && !isSameDay(day, selectedDate) && "border border-[#B47B84]/30"
+                                                        !isSameMonth(day, currentMonth) && "text-gray-700",
+                                                        isSameDay(day, selectedDate) ? "bg-pink-500 text-white shadow-[0_0_15px_rgba(255,113,205,0.4)] scale-110" : "text-gray-300 hover:bg-white/5",
+                                                        isSameDay(day, new Date()) && !isSameDay(day, selectedDate) && "border border-pink-500/30"
                                                     )}
                                                 >
                                                     {format(day, 'd')}
@@ -119,24 +119,24 @@ export const TaskCreator: React.FC<TaskCreatorProps> = ({ isOpen, onClose, onSub
 
                                 {/* Time Selection */}
                                 <div className="space-y-4">
-                                    <label className="text-xs font-black text-[#B47B84] uppercase tracking-widest pl-2">Time</label>
+                                    <label className="text-xs font-black text-pink-500 uppercase tracking-widest pl-2">Time Slot</label>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="bg-white rounded-[24px] p-4 flex items-center justify-between border-2 border-transparent focus-within:border-[#B47B84]/20 shadow-sm">
-                                            <span className="text-xs font-bold text-gray-400 uppercase">Start</span>
+                                        <div className="bg-zinc-900 border border-white/10 rounded-[24px] p-4 flex items-center justify-between shadow-xl">
+                                            <span className="text-xs font-bold text-gray-500 uppercase">Start</span>
                                             <input
                                                 type="time"
                                                 value={startTime}
                                                 onChange={(e) => setStartTime(e.target.value)}
-                                                className="bg-transparent outline-none font-black text-[#B47B84]"
+                                                className="bg-transparent outline-none font-black text-white"
                                             />
                                         </div>
-                                        <div className="bg-white rounded-[24px] p-4 flex items-center justify-between border-2 border-transparent focus-within:border-[#B47B84]/20 shadow-sm">
-                                            <span className="text-xs font-bold text-gray-400 uppercase">End</span>
+                                        <div className="bg-zinc-900 border border-white/10 rounded-[24px] p-4 flex items-center justify-between shadow-xl">
+                                            <span className="text-xs font-bold text-gray-500 uppercase">End</span>
                                             <input
                                                 type="time"
                                                 value={endTime}
                                                 onChange={(e) => setEndTime(e.target.value)}
-                                                className="bg-transparent outline-none font-black text-[#B47B84]"
+                                                className="bg-transparent outline-none font-black text-white"
                                             />
                                         </div>
                                     </div>
@@ -144,20 +144,20 @@ export const TaskCreator: React.FC<TaskCreatorProps> = ({ isOpen, onClose, onSub
 
                                 {/* Title Selection */}
                                 <div className="space-y-4">
-                                    <label className="text-xs font-black text-[#B47B84] uppercase tracking-widest pl-2">Title</label>
+                                    <label className="text-xs font-black text-pink-500 uppercase tracking-widest pl-2">Goal Title</label>
                                     <input
                                         type="text"
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
-                                        placeholder="Write the Title"
-                                        className="w-full bg-white border-2 border-transparent focus:border-[#B47B84]/20 rounded-[24px] px-6 py-5 outline-none text-[#2D1B2E] font-black shadow-sm transition-all text-lg placeholder:text-gray-300"
+                                        placeholder="What are we achieving today?"
+                                        className="w-full bg-zinc-900 border border-white/10 rounded-[24px] px-6 py-5 outline-none text-white font-black shadow-xl transition-all text-lg placeholder:text-zinc-700 focus:border-pink-500/50"
                                         required
                                     />
                                 </div>
 
                                 {/* Category Selection */}
                                 <div className="space-y-4">
-                                    <label className="text-xs font-black text-[#B47B84] uppercase tracking-widest pl-2">Category</label>
+                                    <label className="text-xs font-black text-pink-500 uppercase tracking-widest pl-2">Category</label>
                                     <div className="flex flex-wrap gap-3">
                                         {['Study', 'Meeting', 'Travelling', 'Work', 'Health'].map((cat) => (
                                             <button
@@ -167,8 +167,8 @@ export const TaskCreator: React.FC<TaskCreatorProps> = ({ isOpen, onClose, onSub
                                                 className={cn(
                                                     "px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all",
                                                     category === cat
-                                                        ? "bg-[#B47B84] text-white shadow-md scale-105"
-                                                        : "bg-white text-[#B47B84] hover:bg-[#B47B84]/10 shadow-sm"
+                                                        ? "bg-pink-500 text-white shadow-[0_0_15px_rgba(255,113,205,0.4)]"
+                                                        : "bg-zinc-900 text-gray-400 border border-white/10 hover:border-pink-500/30 shadow-sm"
                                                 )}
                                             >
                                                 {cat}
@@ -179,49 +179,49 @@ export const TaskCreator: React.FC<TaskCreatorProps> = ({ isOpen, onClose, onSub
 
                                 {/* Sub-tasks Section */}
                                 <div className="space-y-4">
-                                    <label className="text-xs font-black text-[#B47B84] uppercase tracking-widest pl-2">Sub-tasks</label>
+                                    <label className="text-xs font-black text-pink-500 uppercase tracking-widest pl-2">Milestones</label>
                                     <div className="flex space-x-2">
                                         <input
                                             type="text"
                                             value={subTaskInput}
                                             onChange={(e) => setSubTaskInput(e.target.value)}
-                                            placeholder="Add a step..."
-                                            className="flex-1 bg-white border-2 border-transparent focus:border-[#B47B84]/20 rounded-[20px] px-5 py-3 outline-none text-[#2D1B2E] font-bold shadow-sm transition-all text-sm"
+                                            placeholder="Split into steps..."
+                                            className="flex-1 bg-zinc-900 border border-white/10 rounded-[20px] px-5 py-3 outline-none text-white font-bold shadow-xl transition-all text-sm mb-4"
                                         />
                                         <button
                                             type="button"
                                             onClick={addSubTask}
-                                            className="bg-[#B47B84] text-white p-3 rounded-[20px] shadow-md"
+                                            className="bg-black border border-pink-500 text-pink-500 p-3 rounded-[20px] shadow-lg mb-4"
                                         >
                                             <Plus size={20} />
                                         </button>
                                     </div>
                                     {subTasks.length > 0 && (
-                                        <div className="bg-white/50 rounded-[30px] p-4 flex flex-wrap gap-2">
+                                        <div className="bg-white/5 rounded-[30px] p-4 flex flex-wrap gap-2">
                                             {subTasks.map((st, i) => (
-                                                <div key={i} className="bg-white px-4 py-1.5 rounded-full text-xs font-bold text-[#B47B84] flex items-center space-x-2 shadow-sm">
+                                                <div key={i} className="bg-zinc-800 border border-white/10 px-4 py-1.5 rounded-full text-xs font-bold text-white flex items-center space-x-2 shadow-sm">
                                                     <span>{st}</span>
-                                                    <button onClick={() => setSubTasks(subTasks.filter((_, idx) => idx !== i))}><X size={12} /></button>
+                                                    <button type="button" onClick={() => setSubTasks(subTasks.filter((_, idx) => idx !== i))} className="hover:text-pink-500 transition-colors"><X size={12} /></button>
                                                 </div>
                                             ))}
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Alarm Toggle */}
-                                <div className="flex items-center justify-between p-6 bg-white rounded-[30px] shadow-sm">
+                                {/* Privacy/Alarm Toggle */}
+                                <div className="flex items-center justify-between p-6 bg-zinc-900 border border-white/10 rounded-[30px] shadow-xl">
                                     <div className="flex items-center space-x-4">
-                                        <div className="w-10 h-10 rounded-full bg-[#B47B84]/10 flex items-center justify-center">
-                                            <Bell size={20} className="text-[#B47B84]" strokeWidth={2} />
+                                        <div className="w-10 h-10 rounded-full bg-pink-500/10 flex items-center justify-center">
+                                            <Bell size={20} className="text-pink-500" strokeWidth={2} />
                                         </div>
-                                        <h4 className="font-bold text-[#2D1B2E]">Alarm</h4>
+                                        <h4 className="font-bold text-white">Reminder Alarm</h4>
                                     </div>
                                     <button
                                         type="button"
                                         onClick={() => setIsReminderOn(!isReminderOn)}
                                         className={cn(
                                             "w-12 h-6 rounded-full transition-colors relative flex items-center px-1",
-                                            isReminderOn ? "bg-[#B47B84]" : "bg-gray-200"
+                                            isReminderOn ? "bg-pink-500" : "bg-zinc-700"
                                         )}
                                     >
                                         <motion.div
@@ -234,9 +234,9 @@ export const TaskCreator: React.FC<TaskCreatorProps> = ({ isOpen, onClose, onSub
 
                                 <button
                                     type="submit"
-                                    className="w-full bg-[#B47B84] text-white rounded-[30px] py-5 font-black uppercase tracking-widest flex items-center justify-center space-x-3 hover:scale-[1.02] active:scale-98 transition-all shadow-xl mt-4"
+                                    className="w-full bg-pink-500 text-white rounded-[30px] py-5 font-black uppercase tracking-widest flex items-center justify-center space-x-3 hover:scale-[1.02] active:scale-98 transition-all shadow-[0_0_20px_rgba(255,113,205,0.4)] mt-4"
                                 >
-                                    <span>Save</span>
+                                    <span>Plan Task</span>
                                 </button>
                             </form>
                         </div>

@@ -54,37 +54,46 @@ export const Tasks: React.FC = () => {
     };
 
     const handleCreateTask = async (taskData: any) => {
+        const newTask = {
+            ...taskData,
+            id: crypto.randomUUID(),
+            user_id: 'user-id-placeholder'
+        };
+
+        // Optimistically update local state so user sees it immediately
+        setTasks(prev => [...prev, newTask].sort((a, b) => a.start_time.localeCompare(b.start_time)));
+        setIsCreatorOpen(false);
+
         try {
-            await taskService.createTask({ ...taskData, user_id: 'user-id-placeholder' });
-            setIsCreatorOpen(false);
-            fetchTasks();
+            await taskService.createTask(newTask);
+            fetchTasks(); // Refresh to get the actual database ID
         } catch (error) {
-            console.error('Error creating task:', error);
+            console.error('Error creating task in DB, but kept local:', error);
         }
     };
 
     const handleCompleteTask = async (id: string) => {
+        // Optimistically update local state
+        setTasks(prev => prev.map(t => t.id === id ? { ...t, is_completed: true } : t));
+
         try {
             await taskService.updateTask(id, { is_completed: true });
-            fetchTasks();
         } catch (error) {
             console.error('Error completing task:', error);
         }
     };
 
     return (
-        <div className="theme-soft min-h-screen pb-32">
+        <div className="min-h-screen pb-32">
             <div className="max-w-2xl mx-auto px-6 py-10 space-y-10 relative z-10">
-                {/* Header from Image 2 */}
-                <header className="flex justify-between items-center text-[#2D1B2E]">
-                    <button className="p-2 rounded-xl bg-white shadow-sm hover:bg-gray-50 transition-colors">
-                        <Menu size={20} />
+                {/* Header from Solo Leveling Theme */}
+                <header className="flex justify-between items-center text-white">
+                    <button className="p-2 rounded-xl bg-white/5 border border-white/10 shadow-sm hover:bg-white/10 transition-colors">
+                        <Menu size={20} className="text-pink-500" />
                     </button>
-                    <h1 className="text-xl font-black">Daily Task</h1>
-                    <button className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center overflow-hidden border-2 border-white">
-                        <div className="w-full h-full bg-[#B47B84]/20 flex items-center justify-center text-[#B47B84]">
-                            <User size={24} />
-                        </div>
+                    <h1 className="text-xl font-black italic tracking-tighter uppercase">Daily Tasks</h1>
+                    <button className="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 to-purple-600 shadow-sm flex items-center justify-center overflow-hidden border border-white/10">
+                        <User size={24} className="text-white" />
                     </button>
                 </header>
 
@@ -98,7 +107,7 @@ export const Tasks: React.FC = () => {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => setIsCreatorOpen(true)}
-                        className="bg-[#B47B84] text-white p-5 rounded-full shadow-[0_20px_40px_rgba(180,123,132,0.4)]"
+                        className="bg-black border-2 border-pink-500 text-pink-500 p-5 rounded-full shadow-[0_0_20px_rgba(255,113,205,0.4)]"
                     >
                         <Plus size={32} strokeWidth={3} />
                     </motion.button>

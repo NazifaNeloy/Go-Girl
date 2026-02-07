@@ -57,42 +57,6 @@
   .neon-glow-pink {
     box-shadow: 0 0 15px rgba(255, 113, 205, 0.4);
   }
-
-  /* Soft-Girl Theme Scoped Utility */
-  .theme-soft {
-    background-color: #F7E7E5;
-    min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
-    color: var(--color-text-primary);
-  }
-
-  .theme-soft::before,
-  .theme-soft::after {
-    content: "";
-    position: fixed;
-    border-radius: 50%;
-    z-index: -1;
-    filter: blur(60px);
-    opacity: 0.3;
-    pointer-events: none;
-  }
-
-  .theme-soft::before {
-    width: 400px;
-    height: 400px;
-    background-color: var(--color-soft-peach);
-    top: -100px;
-    left: -100px;
-  }
-
-  .theme-soft::after {
-    width: 300px;
-    height: 300px;
-    background-color: var(--color-dusty-rose);
-    bottom: 10%;
-    right: -50px;
-  }
 }
 
 body {
