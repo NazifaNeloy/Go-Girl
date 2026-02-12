@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Smile } from 'lucide-react';
-import type { DailyLog } from '../../lib/supabase';
+import { type DailyLog } from '../../lib/supabaseClient';
 import { cn } from '../../lib/utils';
 import { format } from 'date-fns';
 

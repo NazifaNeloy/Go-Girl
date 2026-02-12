@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Github, Linkedin, Edit3, Check, MapPin } from 'lucide-react';
-import type { UserProfile } from '../../lib/supabase';
+import { type UserProfile } from '../../lib/supabaseClient';
 
 interface ProfileHeaderProps {
     profile: UserProfile;

@@ -5,32 +5,38 @@ import { taskService } from '../services/taskService';
 import { Plus, Menu, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import type { Task } from '../lib/supabase';
+import supabase, { type Task } from '../lib/supabaseClient';
 
 export const Tasks: React.FC = () => {
-    const [tasks, setTasks] = useState<Task[]>([
-        {
-            id: '1',
-            user_id: 'mock',
-            title: 'Welcome to Daily Tasks! ✨',
-            start_time: '09:00',
-            end_time: '10:00',
-            date: format(new Date(), 'yyyy-MM-dd'),
-            category: 'Personal',
-            is_reminder_on: true,
-            is_completed: false,
-            sub_tasks: ['Explore the new UI', 'Create your first task']
-        }
-    ]);
+    const [tasks, setTasks] = useState<Task[]>([]);
     const [isCreatorOpen, setIsCreatorOpen] = useState(false);
     const [selectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+    const [currentUser, setCurrentUser] = useState<any>(null);
+
+    useEffect(() => {
+        // Initialize Auth listener
+        const initAuth = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setCurrentUser(user);
+        };
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+            setCurrentUser(session?.user ?? null);
+        });
+
+        initAuth();
+        return () => subscription.unsubscribe();
+    }, []);
 
     useEffect(() => {
         fetchTasks();
+
+        if (!currentUser) return;
+
         // Subscribe to real-time changes
         try {
-            const subscription = taskService.subscribeToTasks('user-id-placeholder', (payload) => {
-                console.log('Real-time change:', payload);
+            const subscription = taskService.subscribeToTasks(currentUser.id, (payload) => {
+                console.log('Real-time task change:', payload);
                 fetchTasks();
             });
 
@@ -40,24 +46,27 @@ export const Tasks: React.FC = () => {
         } catch (e) {
             console.warn('Real-time subscription failed:', e);
         }
-    }, [selectedDate]);
+    }, [selectedDate, currentUser]);
 
     const fetchTasks = async () => {
         try {
             const data = await taskService.getTasks(selectedDate);
             if (data && data.length > 0) {
                 setTasks(data);
+            } else {
+                setTasks([]);
             }
-        } catch (error) {
-            console.error('Error fetching tasks, using mock data:', error);
+        } catch (error: any) {
+            console.warn('Error fetching tasks:', error.message);
         }
     };
 
     const handleCreateTask = async (taskData: any) => {
+        const tempId = crypto.randomUUID();
         const newTask = {
             ...taskData,
-            id: crypto.randomUUID(),
-            user_id: 'user-id-placeholder'
+            id: tempId,
+            user_id: currentUser?.id || 'guest'
         };
 
         // Optimistically update local state so user sees it immediately
@@ -65,10 +74,10 @@ export const Tasks: React.FC = () => {
         setIsCreatorOpen(false);
 
         try {
-            await taskService.createTask(newTask);
+            await taskService.addTask(newTask);
             fetchTasks(); // Refresh to get the actual database ID
-        } catch (error) {
-            console.error('Error creating task in DB, but kept local:', error);
+        } catch (error: any) {
+            console.error('Save to DB failed, kept local:', error.message);
         }
     };
 
@@ -78,8 +87,8 @@ export const Tasks: React.FC = () => {
 
         try {
             await taskService.updateTask(id, { is_completed: true });
-        } catch (error) {
-            console.error('Error completing task:', error);
+        } catch (error: any) {
+            console.error('Error completing task:', error.message);
         }
     };
 

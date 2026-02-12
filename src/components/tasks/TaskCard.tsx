@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import type { PanInfo } from 'framer-motion';
 import { Clock, CheckCircle2 } from 'lucide-react';
-import type { Task } from '../../lib/supabase';
+import { type Task } from '../../lib/supabaseClient';
 import { cn } from '../../lib/utils';
 
 interface TaskCardProps {
@@ -64,7 +64,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
                 {/* Sub-tasks */}
                 {(task.sub_tasks && task.sub_tasks.length > 0) ? (
                     <ul className="space-y-2">
-                        {task.sub_tasks.map((sub, i) => (
+                        {task.sub_tasks.map((sub: string, i: number) => (
                             <li key={i} className="flex items-center space-x-3 text-xs font-semibold text-gray-400">
                                 <div className={cn("w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]", styles.accent)} />
                                 <span>{sub}</span>

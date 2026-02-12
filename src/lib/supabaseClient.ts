@@ -1,12 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-// These will be populated with real values later. 
-// For now, we will use placeholders or rely on mock data if they are missing.
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 // Create a dummy client that supports chaining to avoid crashing the whole app
 const mockClient = {
+    auth: {
+        getUser: async () => ({ data: { user: null }, error: null }),
+        getSession: async () => ({ data: { session: null }, error: null }),
+    },
     from: () => ({
         select: () => mockClient.from(),
         insert: () => mockClient.from(),
@@ -30,6 +32,8 @@ const mockClient = {
 export const supabase = supabaseUrl && supabaseAnonKey
     ? createClient(supabaseUrl, supabaseAnonKey)
     : mockClient;
+
+export default supabase;
 
 export type UserProfile = {
     id: string;
@@ -57,12 +61,22 @@ export type Task = {
     id: string;
     user_id: string;
     title: string;
-    start_time: string; // ISO time string or simple "HH:mm"
-    end_time: string;   // ISO time string or simple "HH:mm"
-    date: string;       // ISO date string YYYY-MM-DD
+    start_time: string;
+    end_time: string;
+    date: string;
     category: string;
     is_reminder_on: boolean;
     is_completed: boolean;
     sub_tasks?: string[];
     created_at?: string;
+};
+
+export type Transaction = {
+    id: string;
+    user_id: string;
+    item_name: string;
+    amount: number;
+    category: string;
+    type: 'credit' | 'debit';
+    created_at: string;
 };

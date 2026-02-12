@@ -17,17 +17,9 @@ import {
     Briefcase,
     Heart
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import supabase, { type Transaction } from '../lib/supabaseClient';
+import { budgetService } from '../services/budgetService';
 import { cn } from '../lib/utils';
-
-interface Transaction {
-    id: string;
-    item_name: string;
-    amount: number;
-    category: string;
-    type: 'credit' | 'debit';
-    created_at: string;
-}
 
 const DEBIT_CATEGORIES = {
     'Food': { color: '#4ADE80', icon: Utensils, gradient: 'from-green-500/20' },
@@ -50,6 +42,7 @@ export const Budget: React.FC = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [currentUser, setCurrentUser] = useState<any>(null);
 
     // Form state
     const [itemName, setItemName] = useState('');
@@ -58,30 +51,55 @@ export const Budget: React.FC = () => {
     const [category, setCategory] = useState<string>('Food');
 
     useEffect(() => {
-        fetchTransactions();
+        // Initialize Auth listener
+        const initAuth = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setCurrentUser(user);
+        };
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+            setCurrentUser(session?.user ?? null);
+        });
+
+        initAuth();
+        return () => subscription.unsubscribe();
     }, []);
+
+    useEffect(() => {
+        fetchTransactions();
+
+        if (!currentUser) return;
+
+        // Subscribe to real-time changes
+        try {
+            const subscription = budgetService.subscribeToBudget(currentUser.id, (payload) => {
+                console.log('Real-time budget change:', payload);
+                fetchTransactions();
+            });
+
+            return () => {
+                subscription.unsubscribe();
+            };
+        } catch (e) {
+            console.warn('Real-time subscription failed:', e);
+        }
+    }, [currentUser]);
 
     const fetchTransactions = async () => {
         setIsLoading(true);
         try {
-            const { data, error } = await supabase
-                .from('transactions')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
+            const data = await budgetService.getTransactions();
             setTransactions(data || []);
-        } catch (error) {
-            console.error('Error fetching transactions:', error);
+        } catch (error: any) {
+            console.warn('Error fetching transactions, using fallbacks:', error.message);
             // Fallback mock data
-            setTransactions([
-                { id: '1', item_name: 'Monthly Salary', amount: 5000, category: 'Work', type: 'credit', created_at: new Date().toISOString() },
-                { id: '2', item_name: 'Supermarket', amount: 120, category: 'Food', type: 'debit', created_at: new Date().toISOString() },
-                { id: '3', item_name: 'Rent', amount: 800, category: 'Accommodation', type: 'debit', created_at: new Date().toISOString() },
-                { id: '4', item_name: 'Freelance Work', amount: 1500, category: 'Work', type: 'credit', created_at: new Date().toISOString() },
-                { id: '5', item_name: 'Tuition Income', amount: 200, category: 'Tuition', type: 'credit', created_at: new Date().toISOString() },
-                { id: '6', item_name: 'Mom gave', amount: 50, category: 'Gifts', type: 'credit', created_at: new Date().toISOString() },
-            ]);
+            if (transactions.length === 0) {
+                setTransactions([
+                    { id: '1', user_id: 'mock', item_name: 'Monthly Salary', amount: 5000, category: 'Work', type: 'credit', created_at: new Date().toISOString() },
+                    { id: '2', user_id: 'mock', item_name: 'Supermarket', amount: 120, category: 'Food', type: 'debit', created_at: new Date().toISOString() },
+                    { id: '3', user_id: 'mock', item_name: 'Rent', amount: 800, category: 'Accommodation', type: 'debit', created_at: new Date().toISOString() },
+                ]);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -92,39 +110,37 @@ export const Budget: React.FC = () => {
         if (!itemName || !amount) return;
 
         setIsSubmitting(true);
+        const tempId = Math.random().toString();
         const newTransaction = {
             item_name: itemName,
             amount: parseFloat(amount),
             category,
             type,
-            created_at: new Date().toISOString(),
         };
 
+        // Optimistic update
+        const optimisticTx = { id: tempId, ...newTransaction, user_id: currentUser?.id || 'guest', created_at: new Date().toISOString() };
+        setTransactions(prev => [optimisticTx as Transaction, ...prev]);
+
         try {
-            const { error } = await supabase
-                .from('transactions')
-                .insert([newTransaction]);
-
-            if (error) throw error;
-
+            await budgetService.addTransaction(newTransaction);
             setItemName('');
             setAmount('');
             fetchTransactions();
-        } catch (error) {
-            console.error('Error adding transaction:', error);
-            setTransactions([{ id: Math.random().toString(), ...newTransaction }, ...transactions]);
+        } catch (error: any) {
+            console.error('Error adding transaction:', error.message);
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const totalDebit = transactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
-    const totalCredit = transactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
+    const totalDebit = transactions.filter((t: any) => t.type === 'debit').reduce((sum: number, t: any) => sum + t.amount, 0);
+    const totalCredit = transactions.filter((t: any) => t.type === 'credit').reduce((sum: number, t: any) => sum + t.amount, 0);
 
-    const categoryDebitTotals = Object.keys(DEBIT_CATEGORIES).reduce((acc, cat) => {
+    const categoryDebitTotals = Object.keys(DEBIT_CATEGORIES).reduce((acc: any, cat) => {
         acc[cat] = transactions
-            .filter(t => t.category === cat && t.type === 'debit')
-            .reduce((sum, t) => sum + t.amount, 0);
+            .filter((t: any) => t.category === cat && t.type === 'debit')
+            .reduce((sum: number, t: any) => sum + t.amount, 0);
         return acc;
     }, {} as Record<string, number>);
 
@@ -322,7 +338,7 @@ export const Budget: React.FC = () => {
                             ) : transactions.length === 0 ? (
                                 <div className="p-10 text-center text-gray-400 border border-white/5 border-dashed rounded-[2rem]">Empty block. Start logging.</div>
                             ) : (
-                                transactions.map((t, i) => {
+                                transactions.map((t: any, i: number) => {
                                     const categoryConfig = (ALL_CATEGORIES as any)[t.category] || { icon: Wallet, color: '#fff', gradient: 'bg-white/5' };
                                     const CategoryIcon = categoryConfig.icon;
                                     const isCredit = t.type === 'credit';

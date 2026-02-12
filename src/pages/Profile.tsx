@@ -3,7 +3,7 @@ import { ProfileHeader } from '../components/profile/ProfileHeader';
 import { ProgressSection } from '../components/profile/ProgressSection';
 import { GlowHeatmap } from '../components/profile/GlowHeatmap';
 import { SystemMessage } from '../components/profile/SystemMessage';
-import type { UserProfile, DailyLog } from '../lib/supabase';
+import { type UserProfile, type DailyLog } from '../lib/supabaseClient';
 import profilePic from '../assets/photos/neel_cartoon.jpg';
 
 // --- MOCK DATA FOR UI DEVELOPMENT ---
@@ -36,7 +36,7 @@ export const Profile: React.FC = () => {
     const [profile, setProfile] = useState<UserProfile>(MOCK_PROFILE);
 
     const handleUpdateBio = (newBio: string) => {
-        setProfile(prev => ({ ...prev, bio: newBio }));
+        setProfile((prev: UserProfile) => ({ ...prev, bio: newBio }));
     };
 
     return (

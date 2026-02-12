@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Task } from '../../lib/supabase';
+import { type Task } from '../../lib/supabaseClient';
 import { TaskCard } from './TaskCard';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';

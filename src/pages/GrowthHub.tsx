@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Timer, Send, Play, Folder, Star, ChevronRight, LayoutGrid } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import supabase from '../lib/supabaseClient';
 import { cn } from '../lib/utils';
 import profilePic from '../assets/photos/neel_cartoon.jpg';
 

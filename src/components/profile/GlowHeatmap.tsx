@@ -3,7 +3,7 @@ import { eachDayOfInterval, startOfYear, endOfYear, format, isSameDay } from 'da
 import { motion } from 'framer-motion';
 import { Calendar } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import type { DailyLog } from '../../lib/supabase';
+import { type DailyLog } from '../../lib/supabaseClient';
 import { GlowSquareModal } from './GlowSquareModal';
 
 interface GlowHeatmapProps {
